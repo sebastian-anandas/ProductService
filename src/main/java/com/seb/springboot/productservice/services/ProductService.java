@@ -1,5 +1,6 @@
 package com.seb.springboot.productservice.services;
 
+import com.seb.springboot.productservice.exceptions.ProductNotFoundException;
 import com.seb.springboot.productservice.models.Category;
 import com.seb.springboot.productservice.models.Product;
 import org.springframework.stereotype.Service;
@@ -8,9 +9,9 @@ import java.util.List;
 
 public interface ProductService {
 
-    Product getSingleProduct(Long productId);
+    Product getSingleProduct(Long productId) throws ProductNotFoundException;
 
-    List<Product> getProducts();
+    List<Product> getAllProducts();
 
     Product createProduct(String title, double price, String description, String image, String category);
 

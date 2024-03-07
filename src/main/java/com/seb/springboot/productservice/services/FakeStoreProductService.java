@@ -1,11 +1,14 @@
 package com.seb.springboot.productservice.services;
 
+import com.seb.springboot.productservice.dtos.ErrorDto;
 import com.seb.springboot.productservice.dtos.FakeStoreProductDto;
+import com.seb.springboot.productservice.exceptions.ProductNotFoundException;
 import com.seb.springboot.productservice.models.Category;
 import com.seb.springboot.productservice.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -22,15 +25,27 @@ public class FakeStoreProductService implements ProductService{
     }
 
     @Override
-    public Product getSingleProduct(Long productId) {
+    public Product getSingleProduct(Long productId) throws ProductNotFoundException {
 
-       FakeStoreProductDto fakeStoreProduct = restTemplate.getForObject("https://fakestoreapi.com/products/" + productId, FakeStoreProductDto.class);
+        // Response Entity will return additional content in the response. eg. headers, cookies, etc
+        ResponseEntity<FakeStoreProductDto> fakeStoreProductResponse = restTemplate.getForEntity("https://fakestoreapi.com/products/" + productId, FakeStoreProductDto.class);
+
+//        if(fakeStoreProductResponse.getStatusCode() != HttpStatusCode.valueOf(200)) {
+//            // define error
+//            throw new RuntimeException();
+//        }
+
+        FakeStoreProductDto fakeStoreProduct = fakeStoreProductResponse.getBody();
+
+        if(fakeStoreProduct == null) {
+            throw new ProductNotFoundException("Product with id: " + productId + " doesn't exist. Retry with some other product.");
+        }
 
         return fakeStoreProduct.toProduct();
     }
 
     @Override
-    public List<Product> getProducts() {
+    public List<Product> getAllProducts() {
 
         FakeStoreProductDto[] fakeStoreProducts = restTemplate.getForObject(
                 "https://fakestoreapi.com/products",
@@ -128,9 +143,9 @@ public class FakeStoreProductService implements ProductService{
                 FakeStoreProductDto[].class
         );
 
-        if(fakeStoreProducts == null) {
-            throw new RuntimeException();
-        }
+//        if(fakeStoreProducts == null) {
+//            throw new RuntimeException();
+//        }
 
         List<Product> allProductsInCategory = new ArrayList<>();
 
@@ -141,4 +156,5 @@ public class FakeStoreProductService implements ProductService{
         return allProductsInCategory;
 
     }
+
 }
