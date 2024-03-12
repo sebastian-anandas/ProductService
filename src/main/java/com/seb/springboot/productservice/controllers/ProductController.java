@@ -7,6 +7,7 @@ import com.seb.springboot.productservice.models.Category;
 import com.seb.springboot.productservice.models.Product;
 import com.seb.springboot.productservice.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class ProductController {
     private RestTemplate restTemplate;
 
     @Autowired
-    public ProductController(ProductService theProductService, RestTemplate theRestTemplate) {
+    public ProductController(@Qualifier("selfProductService") ProductService theProductService, RestTemplate theRestTemplate) {
         this.productService = theProductService;
         this.restTemplate = theRestTemplate;
     }
@@ -32,8 +33,8 @@ public class ProductController {
                 request.getTitle(),
                 request.getPrice(),
                 request.getDescription(),
-                request.getCategory(),
-                request.getImageUrl()
+                request.getImageUrl(),
+                request.getCategory()
         );
     }
 

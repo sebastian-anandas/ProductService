@@ -1,5 +1,9 @@
 package com.seb.springboot.productservice.models;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,14 +13,16 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Product {
+@Entity
+public class Product extends BaseModel {
 
-    private Long id;
     private String title;
     private String description;
     private double price;
     private String imageUrl;
 
+    @ManyToOne(cascade = {CascadeType.PERSIST})
+    @JoinColumn(name = "category_id")
     private Category category;
 
 }
