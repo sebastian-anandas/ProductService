@@ -3,6 +3,7 @@ package com.seb.springboot.productservice.services;
 import com.seb.springboot.productservice.exceptions.ProductNotFoundException;
 import com.seb.springboot.productservice.models.Category;
 import com.seb.springboot.productservice.models.Product;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,10 +18,12 @@ public interface ProductService {
 
     Product deleteProduct(Long productId);
 
-    Product updateProduct(Long productId, Product product);
+    Product replaceProduct(Long productId, String title, String description, double price, String image, String category) throws ProductNotFoundException;
+    Product updateProduct(Long productId, String title, String description, double price, String image, String category) throws ProductNotFoundException;
 
     List<String> getAllCategories();
 
     List<Product> getProductInCategory(String category);
+
 
 }

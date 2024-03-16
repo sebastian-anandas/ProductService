@@ -1,15 +1,14 @@
 package com.seb.springboot.productservice.controllers;
 
 import com.seb.springboot.productservice.dtos.CreateProductRequestDto;
-import com.seb.springboot.productservice.dtos.ErrorDto;
+import com.seb.springboot.productservice.dtos.ReplaceProductRequestDto;
+import com.seb.springboot.productservice.dtos.UpdateProductRequestDto;
 import com.seb.springboot.productservice.exceptions.ProductNotFoundException;
 import com.seb.springboot.productservice.models.Category;
 import com.seb.springboot.productservice.models.Product;
 import com.seb.springboot.productservice.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -48,21 +47,29 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
-
     @PutMapping("/products/{id}")
-    public Product updateProduct(@PathVariable("id") Long productId, @RequestBody CreateProductRequestDto request) {
-        Product product = new Product();
-        product.setDescription(request.getDescription());
-        product.setTitle(request.getTitle());
-        product.setPrice(request.getPrice());
-        product.setImageUrl(request.getImageUrl());
+    public Product replaceProduct(@PathVariable("id") Long productId, @RequestBody ReplaceProductRequestDto replaceRequest) throws ProductNotFoundException {
 
-        Category category = new Category();
-        category.setTitle(request.getTitle());
-        product.setCategory(category);
+        return productService.replaceProduct(productId,
+                replaceRequest.getTitle(),
+                replaceRequest.getDescription(),
+                replaceRequest.getPrice(),
+                replaceRequest.getImageUrl(),
+                replaceRequest.getCategory()
+        );
+    }
 
-        return productService.updateProduct(
-            productId, product
+
+//    @PutMapping("/products/{id}")
+    @PatchMapping("/products/{id}")
+    public Product updateProduct(@PathVariable("id") Long productId, @RequestBody UpdateProductRequestDto updateRequest) throws ProductNotFoundException {
+
+        return productService.updateProduct( productId,
+                updateRequest.getTitle(),
+                updateRequest.getDescription(),
+                updateRequest.getPrice(),
+                updateRequest.getImageUrl(),
+                updateRequest.getCategory()
         );
     }
 

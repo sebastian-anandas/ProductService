@@ -5,6 +5,8 @@ import com.seb.springboot.productservice.models.Category;
 import com.seb.springboot.productservice.models.Product;
 import com.seb.springboot.productservice.repositories.CategoryRepository;
 import com.seb.springboot.productservice.repositories.ProductRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -65,8 +67,60 @@ public class SelfProductService implements ProductService {
     }
 
     @Override
-    public Product updateProduct(Long productId, Product product) {
-        return null;
+    public Product replaceProduct(Long productId, String title, String description, double price, String image, String category) throws ProductNotFoundException {
+
+        Product existingProduct = getSingleProduct(productId);
+        existingProduct.setTitle(title);
+        existingProduct.setDescription(description);
+        existingProduct.setPrice(price);
+        existingProduct.setImageUrl(image);
+
+        Category categoryFromDatabase = categoryRepository.findByTitle(category);
+        if(categoryFromDatabase == null) {
+            Category newCategory = new Category();
+            newCategory.setTitle(category);
+            categoryFromDatabase = newCategory;
+        }
+//        System.out.println(categoryFromDatabase.getTitle());
+        existingProduct.setCategory(categoryFromDatabase);
+
+        Product replacedProduct = productRepository.save(existingProduct);
+
+        return replacedProduct;
+    }
+
+    @Override
+    public Product updateProduct(Long productId, String title, String description, double price, String image, String category) throws ProductNotFoundException {
+
+        Product existingProduct = getSingleProduct(productId);
+
+        if(title != null) {
+            existingProduct.setTitle(title);
+        }
+        if(description != null) {
+            existingProduct.setDescription(description);
+        }
+        if(price != 0.0d) {
+            existingProduct.setPrice(price);
+        }
+        if(image != null) {
+            existingProduct.setImageUrl(image);
+        }
+
+        if(category != null) {
+            Category categoryFromDatabase = categoryRepository.findByTitle(category);
+
+            if(categoryFromDatabase == null) {
+                Category newCategory = new Category();
+                newCategory.setTitle(category);
+                categoryFromDatabase = newCategory;
+            }
+            existingProduct.setCategory(categoryFromDatabase);
+        }
+        Product updatedProduct = productRepository.save(existingProduct);
+
+        return updatedProduct;
+
     }
 
     @Override

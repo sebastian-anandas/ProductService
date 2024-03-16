@@ -90,14 +90,52 @@ public class FakeStoreProductService implements ProductService {
     }
 
     @Override
-    public Product updateProduct(Long productId, Product product) {
+    public Product replaceProduct(Long productId, String title, String description, double price, String image, String category) throws ProductNotFoundException {
         FakeStoreProductDto fakeStoreProductDto = new FakeStoreProductDto();
-        //fakeStoreProductDto.setId(productId);
-        fakeStoreProductDto.setTitle(product.getTitle());
-        fakeStoreProductDto.setDescription(product.getDescription());
-        fakeStoreProductDto.setPrice(product.getPrice());
-        fakeStoreProductDto.setImage(product.getImageUrl());
-        fakeStoreProductDto.setCategory(product.getCategory().getTitle());
+        fakeStoreProductDto.setId(productId);
+        fakeStoreProductDto.setTitle(title);
+        fakeStoreProductDto.setDescription(description);
+        fakeStoreProductDto.setPrice(price);
+        fakeStoreProductDto.setImage(image);
+        fakeStoreProductDto.setCategory(category);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<FakeStoreProductDto> requestEntity = new HttpEntity<>(fakeStoreProductDto, headers);
+
+        ResponseEntity<FakeStoreProductDto> responseEntity = restTemplate.exchange(
+                "https://fakestoreapi.com/products/" + productId,
+                HttpMethod.PATCH,
+                requestEntity,
+                FakeStoreProductDto.class
+        );
+
+        return fakeStoreProductDto.toProduct();
+
+    }
+
+    @Override
+    public Product updateProduct(Long productId, String title, String description, double price, String image, String category) throws ProductNotFoundException {
+
+        FakeStoreProductDto fakeStoreProductDto = new FakeStoreProductDto();
+        fakeStoreProductDto.setId(productId);
+
+        if(title != null) {
+            fakeStoreProductDto.setTitle(title);
+        }
+        if(description != null) {
+            fakeStoreProductDto.setDescription(description);
+        }
+        if(price != 0.0d) {
+            fakeStoreProductDto.setPrice(price);
+        }
+        if(image != null) {
+            fakeStoreProductDto.setImage(image);
+        }
+        if(category != null) {
+            fakeStoreProductDto.setCategory(category);
+        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -110,7 +148,6 @@ public class FakeStoreProductService implements ProductService {
                 requestEntity,
                 FakeStoreProductDto.class
         );
-
 
         return fakeStoreProductDto.toProduct();
     }
